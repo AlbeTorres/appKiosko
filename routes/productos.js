@@ -10,8 +10,8 @@ const auth = require('../middleware/auth');
 //api/productos
 router.post('/',auth,
     [ 
-        check('titulo','El titulo es obligatorio').not().isEmpty(),
-        check('categoria', 'La categoría es obligatoria').not().isEmpty(),
+        check('nombre','El nombre es obligatorio').not().isEmpty(),
+        check('medida', 'La medida es obligatoria').not().isEmpty(),
         check('img', 'La imagen es obligatoria').not().isEmpty(),
     
     ],

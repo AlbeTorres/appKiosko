@@ -1,7 +1,7 @@
 // rutas trabajos
 const express = require('express');
 const router = express.Router();
-const trabajosController = require('../controllers/trabajosController');
+const pedidosController = require('../controllers/pedidosController');
 const {check} = require('express-validator');
 const auth = require('../middleware/auth');
 
@@ -9,25 +9,25 @@ const auth = require('../middleware/auth');
 //api/trabajos
 router.post('/',auth,
     [
-        check('titulo','El titulo no puede estar vacio').not().isEmpty(),
-        check('integrantes','No puedes agregar un trabajo sin integrantes').not().isEmpty()
+        check('productos','No puede estar vacio').not().isEmpty(),
+        check('usuario','El usuario no puede estar vacio').not().isEmpty()
     ],
-    trabajosController.crearTrabajo
+    pedidosController.crearPedido
 );
 
 //obtener todos los trabajos
 router.get('/',auth,
-    trabajosController.obtenerTrabajos
-);
-
+    pedidosController.obtenerPedidos
+    );
+    
 //modificar un trabajo
 router.patch('/:id',auth,
-    trabajosController.modificarTrabajo
+    pedidosController.modificarPedido
 );
 
 //eliminar un trabajo
 router.delete('/:id',auth,
-    trabajosController.eliminarTrabajo
+    pedidosController.eliminarPedido
 );
 
 module.exports= router;

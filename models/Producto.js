@@ -2,14 +2,13 @@ const mongoose = require('mongoose');
 
 const ProductoSchema = mongoose.Schema({
 
-    titulo:{
+    nombre:{
         type: String,
         required: true,
         trim: true
     },
     categoria:{
         type: String,
-        required:true,
         trim: true
     },
     img:{
@@ -22,21 +21,19 @@ const ProductoSchema = mongoose.Schema({
     },
     provincia:{
         type: String,
-        required:true,
         trim: true
     },
     municipio:{
         type: String,
-        required:true,
         trim: true
     },
     promodate:{
         type: String,
     },
-    precio:{
-        type: Number,
+    medida:{
+        type: String,
     },
-    movil:{
+    precio:{
         type: Number,
     },
     creador:{

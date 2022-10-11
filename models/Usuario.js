@@ -6,15 +6,19 @@ const UsuariosSchema = mongoose.Schema({
         required: true,
         trim: true,
     },
-    movil:{
-        type: Number,
+    email:{
+        type: String,
         required: true,
-        unique: true
+        trim: true,
     },
     password:{
         type: String,
         required: true,
         trim: true,
+    },
+    movil:{
+        type: Number,
+        unique: true
     },
     provincia:{
         type: String,
@@ -31,6 +35,13 @@ const UsuariosSchema = mongoose.Schema({
     },
     isAdmin:{
         type: Boolean
+    },
+    carnet:{
+        type: String,
+        trim: true
+    },
+    kyc:{
+        type:Boolean,
     }
 });
 
