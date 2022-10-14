@@ -11,6 +11,10 @@ const ProductoSchema = mongoose.Schema({
         type: String,
         trim: true
     },
+    estado:{
+        type: String,
+        trim: true
+    },
     img:{
         type: String,
         required:true,
