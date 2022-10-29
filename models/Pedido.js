@@ -15,6 +15,22 @@ const PedidoSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    direccion:{
+        type: String,
+        required: true,
+    },
+    receptor:{
+        type: String,
+        required: true,
+    },
+    movil:{
+        type: String,
+        required: true,
+    },
+    pago:{
+        type: String,
+        required: true,
+    },
     valor:{
         type: Number,
         required: true,
