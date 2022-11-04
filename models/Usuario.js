@@ -36,13 +36,23 @@ const UsuariosSchema = mongoose.Schema({
     isAdmin:{
         type: Boolean
     },
-    carnet:{
+    perfilimg:{
         type: String,
-        trim: true
+    },
+    perfil_cloud_id:{
+        type: String,
+        
+    },
+    kycimg:{
+        type: String,
     },
     kyc:{
         type:Boolean,
-    }
+    },
+    kyc_cloud_id:{
+        type: String,
+        
+    },
 });
 
 module.exports = mongoose.model('Usuario', UsuariosSchema);
