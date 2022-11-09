@@ -32,7 +32,7 @@ exports.obtenerPedidos= async(req, res)=>{
 
     try {
 
-         const pedidos = await pedidos.find();
+         const pedidos = await Pedido.find();
          res.status(200).json({pedidos});
 
     } catch (error) {
