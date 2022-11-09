@@ -24,10 +24,6 @@ router.get('/',auth,
 
 //modificar un usuario
 router.patch('/:id',auth,
-[
-    check('nombre', 'El nombre es obligatorio ').not().isEmpty(),
-    check('email',' un email válido').not().isEmpty(),
-], 
     usuarioController.modificarUsuario
     );
 
