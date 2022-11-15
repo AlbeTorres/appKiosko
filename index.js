@@ -1,9 +1,13 @@
 const express = require('express');
+const http = require('http');
 const conectarDB = require('./config/db')
 const cors = require('cors')
 
-// crear eL servidor
+// crear eL servidor express
 const app = express();
+
+//crear el server http para socket
+const server = http.createServer(app)
 
 //conectar la base de datos
 conectarDB();
@@ -27,6 +31,6 @@ app.use('/api/pedidos', require('./routes/pedidos'))
 
 
 // arrancar la app
-app.listen(PORT, ()=>{
+server.listen(PORT, ()=>{
     console.log(`El servidor está corriendo en el puerto ${PORT}`)
 }); 
