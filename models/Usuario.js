@@ -24,6 +24,10 @@ const UsuariosSchema = mongoose.Schema({
         type: Number,
         
     },
+    carnet:{
+        type: Number,
+        
+    },
     provincia:{
         type: String,
         trim: true
