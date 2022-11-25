@@ -20,6 +20,10 @@ const UsuariosSchema = mongoose.Schema({
         type: Number,
         
     },
+    advertencia:{
+        type: Number,
+        
+    },
     provincia:{
         type: String,
         trim: true
