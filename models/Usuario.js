@@ -61,6 +61,13 @@ const UsuariosSchema = mongoose.Schema({
         type: String,
         
     },
+    isVerified:{
+        type:Boolean,
+        default:false
+    },
+    emailToken:{
+        type: String
+    }
 });
 
 module.exports = mongoose.model('Usuario', UsuariosSchema);

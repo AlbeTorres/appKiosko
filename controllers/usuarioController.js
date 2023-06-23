@@ -1,136 +1,152 @@
-const Usuario = require('../models/Usuario');
-const bcryptjs = require('bcryptjs');
-const { validationResult} = require('express-validator');
-const jwt = require('jsonwebtoken');
+const Usuario = require("../models/Usuario");
+const bcryptjs = require("bcryptjs");
+const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const { sendVerificationMail } = require("../utils/sendVerificationMail");
 
-exports.crearUsuario= async(req,res)=>{
+exports.crearUsuario = async (req, res) => {
+  //revisar si hay errores
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
 
-    //revisar si hay errores
-    const errores = validationResult(req);
-    if(!errores.isEmpty()){
-        return res.status(400).json({errores: errores.array()});
+  const { email, password } = req.body;
+
+  try {
+    let usuario = await Usuario.findOne({ email });
+
+    if (usuario) {
+      return res.status(400).json({ msg: "El usuario ya existe" });
     }
 
-    const {email, password} = req.body
-    
-    try{
+    //crea el usuario
 
-        let usuario = await Usuario.findOne({email});
+    usuario = new Usuario({
+      ...req.body,
+      emailToken: crypto.randomBytes(64).toString("hex"),
+    });
 
-        if(usuario){
-            return res.status(400).json({msg:'El usuario ya existe'});
-        }
+    //hashear el password
+    const salt = await bcryptjs.genSalt(10);
+    usuario.password = await bcryptjs.hash(password, salt);
 
-        //crea el usuario
+    //guardar usuario
+    await usuario.save();
 
-        usuario =new Usuario(req.body);
+    //enviar mail de verificacion
+    sendVerificationMail(usuario);
 
-        //hashear el password
-        const salt = await bcryptjs.genSalt(10);
-        usuario.password = await bcryptjs.hash(password, salt);
+    //crear y firmar jwt
+    const payload = {
+      usuario: {
+        id: usuario.id,
+      },
+    };
 
+    //firmar el jwt
+    jwt.sign(
+      payload,
+      process.env.SECRETA,
+      {
+        expiresIn: 3600000,
+      },
+      (error, token) => {
+        if (error) throw error;
 
-        //guardar usuario
-        await usuario.save();
+        //Mensaje de confirmacion
+        res.status(200).json({ token });
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ msg: "Hubo un Error" });
+  }
+};
 
-        //crear y firmar jwt
-        const payload ={
-            usuario: {
-                id: usuario.id
-            }
-        };
+exports.modificarUsuario = async (req, res) => {
+  //revisar si hay errores
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
 
-        //firmar el jwt
-        jwt.sign(payload, process.env.SECRETA, {
-            expiresIn: 3600000
-
-        },(error, token)=>{
-            if(error) throw error;
-
-            //Mensaje de confirmacion
-            res.status(200).json({token});
-
-
-        });
-
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({msg:'Hubo un Error'});
+  try {
+    //verificar que el trabajo existe
+    const usuarioFind = Usuario.find(req.params.id);
+    if (!usuarioFind) {
+      return res.status(404).json({ msg: "No existe el usuario a modificar" });
     }
 
-    
-    
-}
+    //actualizar usuario
+    await Usuario.updateOne({ _id: req.params.id }, { $set: req.body });
+    const usuario = await Usuario.findById(req.params.id);
+    res.status(200).json({ usuario });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Hubo un error" });
+  }
+};
 
-exports.modificarUsuario=async(req,res)=>{
+exports.obtenerUsuarios = async (req, res) => {
+  //revisar si hay errores
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
 
-     //revisar si hay errores
-     const errores = validationResult(req);
-     if(!errores.isEmpty()){
-         return res.status(400).json({errores: errores.array()});
-     }
+  try {
+    //verificar que el usuario existe
+    const usuarios = await Usuario.find({});
 
-     try {
-         //verificar que el trabajo existe
-        const usuarioFind = Usuario.find(req.params.id);
-        if(!usuarioFind){
-            return res.status(404).json({msg:'No existe el usuario a modificar'});
-        }
+    //retornar usuario
+    res.status(200).json({ usuarios });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Hubo un error" });
+  }
+};
 
-         //actualizar usuario
-        await Usuario.updateOne({_id:req.params.id},{$set: req.body})
-        const usuario = await Usuario.findById(req.params.id);
-        res.status(200).json({usuario});
-
-     } catch (error) {
-         console.log(error)
-         res.status(500).json({msg:'Hubo un error'})
-     }
-
-
-}
-
-exports.obtenerUsuarios=async(req,res)=>{
-
-    //revisar si hay errores
-    const errores = validationResult(req);
-    if(!errores.isEmpty()){
-        return res.status(400).json({errores: errores.array()});
+exports.eliminarUsuario = async (req, res) => {
+  try {
+    //verificar que el trabajo existe
+    const usuarioFind = Usuario.find(req.params.id);
+    if (!usuarioFind) {
+      return res.status(404).json({ msg: "No existe el usuario a eliminar" });
     }
 
-    try {
+    //eliminar usuario
+    await Usuario.findOneAndRemove({ _id: req.params.id });
+    res.status(200).json({ msg: "Usuario eliminado correctamente" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Hubo un error" });
+  }
+};
 
-         //verificar que el usuario existe
-        const usuarios = await Usuario.find({});
+exports.verificarEmail = async (req, res) => {
+  try {
+    const emailToken = req.body.emailToken;
 
-          //retornar usuario
-        res.status(200).json({usuarios});
-        
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({msg:'Hubo un error'})
-        
-    }
-}
-
-exports.eliminarUsuario= async(req, res)=>{
-
-    try {
-
-         //verificar que el trabajo existe
-         const usuarioFind = Usuario.find(req.params.id);
-         if(!usuarioFind){
-             return res.status(404).json({msg:'No existe el usuario a eliminar'});
-         }
-
-         //eliminar usuario
-         await Usuario.findOneAndRemove({_id:req.params.id});
-         res.status(200).json({msg:'Usuario eliminado correctamente'});
-         
-    } catch (error) {
-       console.log(error)
-       res.status(500).json({msg:'Hubo un error'})
-        
+    if (!emailToken) {
+      return res.status(404).json("emailToken not found...");
     }
 
-}
+    const usuario = await Usuario.findOne({ emailToken });
+
+    if (usuario) {
+      usuario.emailToken = null;
+      usuario.isVerified = true;
+
+      await usuario.save();
+
+      res.status(200).json({ usuario });
+    } else {
+      res.status(404).json("Email verification failed, invalid token");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error.message);
+  }
+};
