@@ -35,5 +35,11 @@ router.post(
   [check("emailToken", "Debe enviar un token").not().isEmpty()],
   usuarioController.verificarEmail
 );
+//verificar email
+router.get(
+  "/recovery-code",
+  [check("email", "Debe enviar un email").not().isEmpty()],
+  usuarioController.recoveryCode
+);
 
 module.exports = router;

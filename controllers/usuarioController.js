@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { sendVerificationMail } = require("../utils/sendVerificationMail");
+const { sendRecoveryPassEmail } = require("../utils/sendRecoveryPassEmail");
 
 exports.crearUsuario = async (req, res) => {
   //revisar si hay errores
@@ -126,6 +127,12 @@ exports.eliminarUsuario = async (req, res) => {
 };
 
 exports.verificarEmail = async (req, res) => {
+  //revisar si hay errores
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
+
   try {
     const emailToken = req.body.emailToken;
 
@@ -144,6 +151,42 @@ exports.verificarEmail = async (req, res) => {
       res.status(200).json({ usuario });
     } else {
       res.status(404).json("Email verification failed, invalid token");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error.message);
+  }
+};
+
+exports.recoveryCode = async (req, res) => {
+  //revisar si hay errores
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
+
+  try {
+    const userId = req.body.email;
+
+    if (!userId) {
+      return res.status(404).json("email not found...");
+    }
+
+    const usuario = await Usuario.findOne({ email });
+
+    if (usuario) {
+      const recoveryCode = Array.from({ length: 6 }, () =>
+        Math.floor(Math.random() * 10)
+      );
+      usuario.recoveryCode = recoveryCode.toString().replace(",", "");
+
+      await usuario.save();
+
+      sendRecoveryPassEmail(usuario);
+
+      res.status(200).json("Recovery code sended");
+    } else {
+      res.status(404).json("Email recovery code failed, invalid email");
     }
   } catch (error) {
     console.log(error);
