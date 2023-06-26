@@ -166,9 +166,9 @@ exports.recoveryCode = async (req, res) => {
   }
 
   try {
-    const userId = req.body.email;
+    const email = req.body.email;
 
-    if (!userId) {
+    if (!email) {
       return res.status(404).json("email not found...");
     }
 
@@ -187,6 +187,40 @@ exports.recoveryCode = async (req, res) => {
       res.status(200).json("Recovery code sended");
     } else {
       res.status(404).json("Email recovery code failed, invalid email");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error.message);
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  //revisar si hay errores
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
+
+  try {
+    const { password, code } = req.body.id;
+
+    const usuario = await Usuario.findOne({ _id: req.params.id });
+
+    if (usuario) {
+      if (usuario.recoveryCode === code) {
+        //hashear el password
+        const salt = await bcryptjs.genSalt(10);
+        usuario.password = await bcryptjs.hash(password, salt);
+
+        //guardar usuario
+        await usuario.save();
+
+        res.status(200).json("Password changed");
+      } else {
+        res.status(404).json("Invalid code");
+      }
+    } else {
+      res.status(404).json("User not found");
     }
   } catch (error) {
     console.log(error);
