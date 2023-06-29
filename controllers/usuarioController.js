@@ -148,7 +148,7 @@ exports.verificarEmail = async (req, res) => {
 
       await usuario.save();
 
-      res.status(200).json({ usuario });
+      res.status(200).json(usuario);
     } else {
       res.status(404).json("Email verification failed, invalid token");
     }
