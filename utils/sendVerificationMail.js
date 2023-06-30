@@ -7,8 +7,8 @@ const sendVerificationMail = (user) => {
     from: '"Albe de kioskito", <kiosko-pi.vercel.app>',
     to: user.email,
     subject: "Verifica tu cuenta",
-    html: `<p>Hello ${user.name}, verifica tu cuenta haciendo click en este enlace </p>
-    <a href=${process.env.CLIENT_URL}/verify-email?emailToken=${user.emailToken} >Verifica tu cuenta<a/>`,
+    html: `<p>Hello ${user.nombre}, verifica tu cuenta haciendo click en este enlace </p>
+    <a href=${process.env.CLIENT_URL}/verify-email${user.emailToken} >Verifica tu cuenta<a/>`,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
