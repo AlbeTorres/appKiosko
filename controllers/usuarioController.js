@@ -178,7 +178,7 @@ exports.recoveryCode = async (req, res) => {
       const recoveryCode = Array.from({ length: 6 }, () =>
         Math.floor(Math.random() * 10)
       );
-      usuario.recoveryCode = recoveryCode.toString().replace(",", "");
+      usuario.recoveryCode = recoveryCode.toString().replaceAll(",", "");
 
       await usuario.save();
 

@@ -36,7 +36,7 @@ router.post(
   usuarioController.verificarEmail
 );
 //verificar email
-router.get(
+router.post(
   "/recovery-code",
   [check("email", "Debe enviar un email").not().isEmpty()],
   usuarioController.recoveryCode
