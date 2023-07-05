@@ -43,8 +43,9 @@ router.post(
 );
 //cambiar password
 router.post(
-  "/change-password:id",
+  "/change-password",
   [
+    [check("email", "Debe enviar un email").not().isEmpty()],
     check("password", "Debe enviar el nuevo password").not().isEmpty(),
     check("code", "Debe enviar el code").not().isEmpty(),
   ],

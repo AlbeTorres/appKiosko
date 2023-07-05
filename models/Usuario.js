@@ -63,7 +63,7 @@ const UsuariosSchema = mongoose.Schema({
     type: String,
   },
   recoveryCode: {
-    type: String,
+    type: Number,
   },
 });
 

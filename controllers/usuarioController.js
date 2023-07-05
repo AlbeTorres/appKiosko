@@ -178,7 +178,9 @@ exports.recoveryCode = async (req, res) => {
       const recoveryCode = Array.from({ length: 6 }, () =>
         Math.floor(Math.random() * 10)
       );
-      usuario.recoveryCode = recoveryCode.toString().replaceAll(",", "");
+      usuario.recoveryCode = Number(
+        recoveryCode.toString().replaceAll(",", "")
+      );
 
       await usuario.save();
 
@@ -202,9 +204,9 @@ exports.changePassword = async (req, res) => {
   }
 
   try {
-    const { password, code } = req.body.id;
+    const { password, code, email } = req.body;
 
-    const usuario = await Usuario.findOne({ _id: req.params.id });
+    const usuario = await Usuario.findOne({ email });
 
     if (usuario) {
       if (usuario.recoveryCode === code) {
