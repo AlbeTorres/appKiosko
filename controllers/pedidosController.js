@@ -17,7 +17,6 @@ exports.crearPedido = async (req, res) => {
 
     const usuario = await Usuario.findOne({ _id: req.usuario.id });
 
-
     await pedido.save();
 
     sendPedidoEmail(usuario, "albertocorreoficial@gmail.com", pedido);
@@ -29,7 +28,7 @@ exports.crearPedido = async (req, res) => {
   }
 };
 
-//obtener todos los trabajos
+//obtener todos los pedidos
 exports.obtenerPedidos = async (req, res) => {
   try {
     const pedidos = await Pedido.find();
@@ -39,6 +38,17 @@ exports.obtenerPedidos = async (req, res) => {
     res.status(500).json({ msg: "Hubo un error" });
   }
 };
+
+//obtener pedido
+exports.obtenerPedido = async (req, res) => {
+  try {
+    const pedido = await Pedido.find(req.params.id);
+    res.status(200).json({ pedido });
+  } catch (error) {
+    res.status(500).json({ msg: "Hubo un error" });
+  }
+};
+
 exports.modificarPedido = async (req, res) => {
   try {
     //verificar que el trabajo existe

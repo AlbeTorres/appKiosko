@@ -109,6 +109,27 @@ exports.obtenerUsuarios = async (req, res) => {
   }
 };
 
+exports.obtenerUsuario = async (req, res) => {
+  //revisar si hay errores
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
+
+  try {
+    //verificar que el usuario existe
+    const usuario = await Usuario.find(req.params.id);
+    if (!usuario) {
+      return res.status(404).json({ msg: "No existe el usuario" });
+    }
+
+    //retornar usuario
+    res.status(200).json({ usuario });
+  } catch (error) {
+    res.status(500).json({ msg: "Hubo un error" });
+  }
+};
+
 exports.eliminarUsuario = async (req, res) => {
   try {
     //verificar que el trabajo existe

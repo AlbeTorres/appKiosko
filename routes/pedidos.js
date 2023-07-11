@@ -1,33 +1,32 @@
 // rutas trabajos
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const pedidosController = require('../controllers/pedidosController');
-const {check} = require('express-validator');
-const auth = require('../middleware/auth');
+const pedidosController = require("../controllers/pedidosController");
+const { check } = require("express-validator");
+const auth = require("../middleware/auth");
 
 //crear un trabajo
 //api/trabajos
-router.post('/',auth,
-    [
-        check('productos','No puede estar vacio').not().isEmpty(),
-        check('usuario','El usuario no puede estar vacio').not().isEmpty()
-    ],
-    pedidosController.crearPedido
+router.post(
+  "/",
+  auth,
+  [
+    check("productos", "No puede estar vacio").not().isEmpty(),
+    check("usuario", "El usuario no puede estar vacio").not().isEmpty(),
+  ],
+  pedidosController.crearPedido
 );
 
 //obtener todos los trabajos
-router.get('/',auth,
-    pedidosController.obtenerPedidos
-    );
-    
+router.get("/", auth, pedidosController.obtenerPedidos);
+
+//obtener todos los trabajos
+router.get("/:id", auth, pedidosController.obtenerPedido);
+
 //modificar un trabajo
-router.patch('/:id',auth,
-    pedidosController.modificarPedido
-);
+router.patch("/:id", auth, pedidosController.modificarPedido);
 
 //eliminar un trabajo
-router.delete('/:id',auth,
-    pedidosController.eliminarPedido
-);
+router.delete("/:id", auth, pedidosController.eliminarPedido);
 
-module.exports= router;
+module.exports = router;

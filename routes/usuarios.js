@@ -22,6 +22,9 @@ router.post(
 //obtener todos los participantes
 router.get("/", auth, usuarioController.obtenerUsuarios);
 
+//obtener un usuario
+router.get("/:id", auth, usuarioController.obtenerUsuario);
+
 //modificar un usuario
 router.patch("/:id", auth, usuarioController.modificarUsuario);
 
