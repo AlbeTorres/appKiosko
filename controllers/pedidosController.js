@@ -32,7 +32,7 @@ exports.crearPedido = async (req, res) => {
 exports.obtenerPedidos = async (req, res) => {
   try {
     const pedidos = await Pedido.find();
-    res.status(200).json({ pedidos });
+    res.status(200).json(pedidos);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Hubo un error" });
