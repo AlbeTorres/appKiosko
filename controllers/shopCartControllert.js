@@ -23,11 +23,15 @@ exports.getCartPrice = async (req, res) => {
     const cartproducts = JSON.parse(req.query.cartproducts);
 
     let totalCartPrice = 0;
-    totalCartPrice = await cartproducts.reduce(async (totalCartPrice, p) => {
-      let aux = await getProductPrice(p._id);
+    let i = 0;
 
-      return (totalCartPrice + aux) * p.cantidad;
-    }, 0);
+    while (i < cartproducts.length) {
+      let aux = await getProductPrice(cartproducts[i]._id);
+
+      totalCartPrice = (totalCartPrice + aux) * cartproducts[i].cantidad;
+
+      i = i + 1;
+    }
 
     res.status(200).json({ totalCartPrice });
   } catch (error) {
@@ -45,14 +49,16 @@ exports.getCartProducts = async (req, res) => {
   try {
     const cartproductsid = JSON.parse(req.query.cartproducts);
 
-    const cartproducts = await cartproductsid.reduce(
-      async (cartproducts, p) => {
-        let aux = await getProduct(p._id);
+    let cartproducts = [];
+    let i = 0;
 
-        return [...cartproducts, aux];
-      },
-      []
-    );
+    while (i < cartproductsid.length) {
+      let aux = await getProduct(cartproductsid[i]._id);
+
+      cartproducts.push(aux);
+
+      i = i + 1;
+    }
 
     console.log(cartproducts);
 
