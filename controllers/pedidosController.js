@@ -31,13 +31,27 @@ exports.crearPedido = async (req, res) => {
 //obtener todos los pedidos
 exports.obtenerPedidos = async (req, res) => {
   try {
-    const pedidos = await Pedido.find();
+    const usuario = req.usuario;
+    console.log(usuario);
+    const pedidos = await Pedido.find({ usuario: usuario.id });
     res.status(200).json(pedidos);
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Hubo un error" });
   }
 };
+
+// exports.obtenerPedidosAdmin = async (req, res) => {
+//   try {
+//     const usuario = req.usuario;
+//     console.log(usuario);
+//     const pedidos = await Pedido.find();
+//     res.status(200).json(pedidos);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ msg: "Hubo un error" });
+//   }
+// };
 
 //obtener pedido
 exports.obtenerPedido = async (req, res) => {
