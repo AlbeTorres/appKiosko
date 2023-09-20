@@ -7,7 +7,7 @@ const PedidoSchema = mongoose.Schema({
     ref: "Usuario",
   },
   productos: {
-    type: Array,
+    type: String,
     required: true,
   },
   estado: {

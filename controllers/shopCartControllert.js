@@ -1,18 +1,6 @@
-const Producto = require("../models/Producto");
 const CostoEnvío = require("../models/CostoEnvío");
 const { validationResult } = require("express-validator");
-
-const getProductPrice = async (id) => {
-  const product = await Producto.findById(id);
-
-  return product.precio;
-};
-
-const getProduct = async (id) => {
-  const product = await Producto.findById(id);
-
-  return product;
-};
+const product = require("../utils/ProductUtils");
 
 exports.getCartPrice = async (req, res) => {
   const errores = validationResult(req);
@@ -27,7 +15,7 @@ exports.getCartPrice = async (req, res) => {
     let i = 0;
 
     while (i < cartproducts.length) {
-      let aux = await getProductPrice(cartproducts[i]._id);
+      let aux = await product.getProductPrice(cartproducts[i]._id);
 
       totalCartPrice = (totalCartPrice + aux) * cartproducts[i].cantidad;
 
@@ -54,7 +42,7 @@ exports.getCartProducts = async (req, res) => {
     let i = 0;
 
     while (i < cartproductsid.length) {
-      let aux = await getProduct(cartproductsid[i]._id);
+      let aux = await product.getProduct(cartproductsid[i]._id);
 
       cartproducts.push(aux);
 

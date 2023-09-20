@@ -2,6 +2,28 @@ const Pedido = require("../models/Pedido");
 const { validationResult } = require("express-validator");
 const { sendPedidoEmail } = require("../utils/sendPedidoMail");
 const Usuario = require("../models/Usuario");
+const product = require("../utils/ProductUtils");
+
+const obtenerCliente = async (id) => {
+  let usuario = await Usuario.findOne({ _id: id });
+
+  return usuario;
+};
+
+const mapearPedidos = async (pedido) => {
+  const productlist = JSON.parse(pedido.productos);
+  let products = [];
+  let i = 0;
+
+  while (i < productlist.length) {
+    let aux = await product.getProduct(productlist[i]._id);
+
+    products.push({ ...aux._doc, cantidad: productlist[i].cantidad });
+
+    i = i + 1;
+  }
+  return products;
+};
 
 exports.crearPedido = async (req, res) => {
   //revisar si hay errores
@@ -55,9 +77,20 @@ exports.obtenerPedidos = async (req, res) => {
 
 //obtener pedido
 exports.obtenerPedido = async (req, res) => {
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
   try {
-    const pedido = await Pedido.find(req.params.id);
-    res.status(200).json({ pedido });
+    const pedido = await Pedido.findOne({ _id: req.params.id });
+
+    const products = await mapearPedidos(pedido);
+
+    const cliente = await obtenerCliente(pedido.usuario);
+
+    res
+      .status(200)
+      .json({ ...pedido._doc, productos: products, cliente: cliente });
   } catch (error) {
     res.status(500).json({ msg: "Hubo un error" });
   }
