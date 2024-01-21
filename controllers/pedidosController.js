@@ -3,6 +3,18 @@ const { validationResult } = require("express-validator");
 const { sendPedidoEmail } = require("../utils/sendPedidoMail");
 const Usuario = require("../models/Usuario");
 const product = require("../utils/ProductUtils");
+const OrderCounter = require("../models/OrderCounter");
+
+// Función para obtener y actualizar el número de pedido único
+const getNextOrderNumber = async () => {
+  const counter = await OrderCounter.findOneAndUpdate(
+    { id: "orderNumber" },
+    { $inc: { order: 1 } },
+    { new: true }
+  );
+
+  return counter.sequenceValue;
+};
 
 const obtenerCliente = async (id) => {
   let usuario = await Usuario.findOne({ _id: id });
@@ -33,8 +45,11 @@ exports.crearPedido = async (req, res) => {
   }
 
   try {
+    // Obtener el próximo número de pedido del contador y actualizarlo
+    const orderNumber = await getNextOrderNumber();
+
     //crear trabajo
-    const pedido = new Pedido(req.body);
+    const pedido = new Pedido({ ...req.body, order: orderNumber });
     pedido.usuario = req.usuario.id;
 
     const usuario = await Usuario.findOne({ _id: req.usuario.id });

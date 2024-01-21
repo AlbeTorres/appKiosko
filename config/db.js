@@ -1,18 +1,19 @@
-const mongoose = require('mongoose');
-require('dotenv').config({path:'variables.env'});
+const mongoose = require("mongoose");
+const { initializeCounter } = require("./populate");
+require("dotenv").config({ path: "variables.env" });
 
-const conectarDB= async()=>{
-    try {
+const conectarDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_DB);
 
-        await mongoose.connect(process.env.MONGO_DB);
+    console.log("Database Conectada");
 
-        console.log('Database Conectada');
-        
-    } catch (error) {
-        console.log(error)
-        process.exit(1)// detener la app si hay problemas de conexión
-        
-    }  
-}
+    // Inicializa el contador (si no se ha inicializado previamente)
+    await initializeCounter();
+  } catch (error) {
+    console.log(error);
+    process.exit(1); // detener la app si hay problemas de conexión
+  }
+};
 
-module.exports= conectarDB;
+module.exports = conectarDB;

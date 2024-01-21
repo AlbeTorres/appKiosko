@@ -10,6 +10,11 @@ const PedidoSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  order: {
+    type: Number,
+    required: true,
+    unique: true,
+  },
   estado: {
     type: String,
     required: true,
